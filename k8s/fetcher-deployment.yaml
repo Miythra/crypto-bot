@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crypto-fetcher-deployment
+spec:
+  replicas: 1 # On veut 1 exemplaire de notre script
+  selector:
+    matchLabels:
+      app: crypto-fetcher # Sert à Kubernetes pour retrouver ses petits
+  template:
+    metadata:
+      labels:
+        app: crypto-fetcher
+    spec:
+      containers:
+      - name: fetcher-container
+        image: crypto-fetcher # Le nom de l'image que tu as "chargée" tout à l'heure
+        imagePullPolicy: Never # TRÈS IMPORTANT : dit à K8s de ne pas chercher sur Internet
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "1"

@@ -15,21 +15,36 @@ def get_redis_connection():
         return None
 
 def fetch_crypto_prices():
-    # API publique et gratuite de CoinGecko
     url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd"
     
     try:
         response = requests.get(url)
+        
+        # 1. On vérifie d'abord si on est bloqué par l'API
+        if response.status_code == 429:
+            print("Erreur 429 : Trop de requêtes ! L'API nous met en pause.")
+            return None
+        
+        # 2. On vérifie s'il y a une autre erreur (serveur en panne, etc.)
+        if response.status_code != 200:
+            print(f"Erreur réseau inattendue : Code {response.status_code}")
+            return None
+            
         data = response.json()
         
-        btc_price = data['bitcoin']['usd']
-        eth_price = data['ethereum']['usd']
-        
-        print(f"Prix récupérés -> BTC: {btc_price}$ | ETH: {eth_price}$")
-        return {'BTC': btc_price, 'ETH': eth_price}
-        
+        # 3. On vérifie que les clés existent bien avant de les lire
+        if 'bitcoin' in data and 'ethereum' in data:
+            btc_price = data['bitcoin']['usd']
+            eth_price = data['ethereum']['usd']
+            
+            print(f"Prix récupérés -> BTC: {btc_price}$ | ETH: {eth_price}$")
+            return {'BTC': btc_price, 'ETH': eth_price}
+        else:
+            print(f"Structure JSON inattendue : {data}")
+            return None
+            
     except Exception as e:
-        print(f"Erreur lors de la récupération des prix : {e}")
+        print(f"Erreur critique du script : {e}")
         return None
 
 if __name__ == "__main__":

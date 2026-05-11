@@ -1,0 +1,12 @@
+services:
+  # Notre base de données (image officielle toute prête)
+  redis-master:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  # Notre script Python
+  fetcher:
+    build: ./fetcher  # Docker va aller dans le dossier /fetcher et lire le Dockerfile
+    depends_on:
+      - redis-master  # On dit à Docker d'attendre que Redis soit prêt
