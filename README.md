@@ -21,31 +21,8 @@ L'objectif pédagogique est de montrer comment sécuriser les communications int
 
 ## Architecture (vue simplifiée)
 
-Bloc ASCII (monospace) — lisible dans tous les viewers :
 
-```text
-+-----------------+      (5000)       +--------------------+
-| Navigateur Hôte | ----------------> | Pod: crypto-api    |
-|                 |                   | (Flask)            |
-+-----------------+                   +--------------------+
-                                                                                                                                             |
-                                                                                                                                      (6379)
-                                                                                                                                             v
-                                                                                                                       +--------------------+
-                                                                                                                       | Pod: crypto-fetcher|
-                                                                                                                       +--------------------+
-                                                                                                                                             |
-                                                                                                                                      (6379)
-                                                                                                                                             v
-                                                                                                                                     +-----------+
-                                                                                                                                     |  Redis    |
-                                                                                                                                     | (secured) |
-                                                                                                                                     +-----------+
-
-Pod non autorisé (ex. `pod-attaquant`) -> tentative ---X--- (bloquée par Calico)
-```
-
-Diagramme Mermaid (si votre viewer supporte Mermaid) :
+Diagramme Mermaid:
 
 ```mermaid
 flowchart LR
