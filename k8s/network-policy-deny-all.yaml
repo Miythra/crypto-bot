@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: default
+spec:
+  podSelector: {} # Les accolades vides indiquent que la règle s'applique à ABSOLUMENT TOUS les Pods du namespace
+  policyTypes:
+  - Ingress       # On bloque tout le trafic entrant

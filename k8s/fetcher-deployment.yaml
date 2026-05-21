@@ -19,3 +19,9 @@ spec:
         env:
         - name: PYTHONUNBUFFERED
           value: "1"
+        #on ajoute le password ici aussi
+        - name: REDIS_PASS
+          valueFrom:
+            secretKeyRef:
+              name: redis-password # Le nom du coffre-fort
+              key: password        # La clé à lire dedans

@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-allow-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: redis # Cette politique s'applique à la cible : Redis
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: crypto-api # Autorise le trafic venant de l'API
+    - podSelector:
+        matchLabels:
+          app: crypto-fetcher # Autorise le trafic venant du Fetcher
+    ports:
+    - protocol: TCP
+      port: 6379 # Uniquement sur le port officiel de Redis

@@ -1,15 +1,18 @@
 import requests
 import redis
 import time
+import os # On importe os pour pouvoir lire les variables d'environnement, notamment le mot de passe Redis.
 
 # Configuration de la connexion à notre future base Redis
 # On utilise "redis-master" comme nom d'hôte, tu comprendras pourquoi avec Docker !
 redis_host = 'redis-master'
 redis_port = 6379
+# Récupération du mot de passe depuis l'environnement K8s
+redis_password = os.environ.get("REDIS_PASS")
 
 def get_redis_connection():
     try:
-        return redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
+        return redis.Redis(host=redis_host, port=redis_port, password=redis_password, decode_responses=True)
     except Exception as e:
         print(f"Erreur de connexion à Redis : {e}")
         return None
