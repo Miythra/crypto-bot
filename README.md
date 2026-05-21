@@ -21,14 +21,39 @@ L'objectif pédagogique est de montrer comment sécuriser les communications int
 
 ## Architecture (vue simplifiée)
 
-[ Navigateur Hôte ] ──(5000)──> [ Pod: crypto-api ]
-                                                 │
-                                          (6379)
-                                                 ▼
-                              [ Pod: crypto-fetcher ]
-                                                 │
-                                                 ▼
-                                           [ Pod: redis ]
+Bloc ASCII (monospace) — lisible dans tous les viewers :
+
+```text
++-----------------+      (5000)       +--------------------+
+| Navigateur Hôte | ----------------> | Pod: crypto-api    |
+|                 |                   | (Flask)            |
++-----------------+                   +--------------------+
+                                                                                                                                             |
+                                                                                                                                      (6379)
+                                                                                                                                             v
+                                                                                                                       +--------------------+
+                                                                                                                       | Pod: crypto-fetcher|
+                                                                                                                       +--------------------+
+                                                                                                                                             |
+                                                                                                                                      (6379)
+                                                                                                                                             v
+                                                                                                                                     +-----------+
+                                                                                                                                     |  Redis    |
+                                                                                                                                     | (secured) |
+                                                                                                                                     +-----------+
+
+Pod non autorisé (ex. `pod-attaquant`) -> tentative ---X--- (bloquée par Calico)
+```
+
+Diagramme Mermaid (si votre viewer supporte Mermaid) :
+
+```mermaid
+flowchart LR
+       Host["Navigateur Hôte"] -->|5000| API["Pod: crypto-api (Flask)"]
+       API -->|6379| Fetcher["Pod: crypto-fetcher"]
+       Fetcher -->|6379| Redis["Pod: redis (secured)"]
+       Attacker["Pod: Attaquant"] -.->|6379| Redis
+```
 
 Un pod non autorisé doit être empêché d'atteindre Redis grâce aux NetworkPolicies.
 
